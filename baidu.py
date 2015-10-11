@@ -17,7 +17,7 @@ sys.setdefaultencoding("utf8")
 
 
 class BaiduResume:
-    def __init__(self, user_name, passwd, host="127.0.0.1", port=6800, aria2_id="aria2_download", refresh=False):
+    def __init__(self, user_name, passwd,refresh, host="127.0.0.1", port=6800, aria2_id="aria2_download"):
         self.user_name = user_name
         self.passwd = passwd
         self.host = host
@@ -168,5 +168,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     resume = BaiduResume(user_name=args.username, passwd=args.passwd, host=args.host,
-                         port=args.port, aria2_id=args.aria2_id)
+                         port=args.port, aria2_id=args.aria2_id,refresh=args.refresh)
     resume.start()
