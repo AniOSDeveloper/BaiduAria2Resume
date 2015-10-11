@@ -148,7 +148,7 @@ class BaiduResume:
         else:
             self._scan_save_all_file_fid()
 
-        print self._aria2_rpc_error_task()
+        self._aria2_rpc_error_task()
 
 
 def get_hash_code(s):
