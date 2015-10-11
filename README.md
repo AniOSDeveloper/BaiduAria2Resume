@@ -4,7 +4,7 @@
 百度的链接有时效性，保持这个脚本在后台运行，修复失效链接。
 ![](https://raw.githubusercontent.com/sunzhaoyang/BaiduAria2Resume/master/screenshot.png)
 
-##说明
+##项目推荐
 百度网盘的下载速度是有目共睹的，配合aria2下载一般都可以达到满速
 推荐配合插件:
 
@@ -18,6 +18,11 @@
 <https://github.com/ziahamza/webui-aria2>
 
 aria2 比较好的管理页面
+
+###pan-baidu-download
+<https://github.com/banbanchs/pan-baidu-download>
+
+登陆部分代码来自pan-baidu-download项目，感谢原作者！
 
 ##参数
 
