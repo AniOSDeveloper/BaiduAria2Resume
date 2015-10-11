@@ -17,7 +17,7 @@ sys.setdefaultencoding("utf8")
 
 
 class BaiduResume:
-    def __init__(self, user_name, passwd,refresh, host="127.0.0.1", port=6800, aria2_id="aria2_download"):
+    def __init__(self, user_name, passwd, refresh, host="127.0.0.1", port=6800, aria2_id="aria2_download"):
         self.user_name = user_name
         self.passwd = passwd
         self.host = host
@@ -78,6 +78,8 @@ class BaiduResume:
         return json.loads(res.read())
 
     def _get_download_link(self, baidu_path):
+        if get_hash_code(baidu_path) in self.all_file_fid.keys():
+            self._get_all_file_fid("/")
         url = self.download_url + urllib.urlencode(
             {"timestamp": int(time()), "fidlist": "[" + str(self.all_file_fid[get_hash_code(baidu_path)]) + "]",
              "bdstoken": self.account.token,
@@ -168,5 +170,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     resume = BaiduResume(user_name=args.username, passwd=args.passwd, host=args.host,
-                         port=args.port, aria2_id=args.aria2_id,refresh=args.refresh)
+                         port=args.port, aria2_id=args.aria2_id, refresh=args.refresh)
     resume.start()
