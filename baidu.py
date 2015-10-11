@@ -44,7 +44,7 @@ class BaiduResume:
                     self._get_all_file_fid(path + sub_path_name + "/")
             else:
                 fs_id = sub_path['fs_id']
-                self.all_file_fid[get_hash_code(path + sub_path_name)] = fs_id
+                self.all_file_fid[get_hash_code(sub_path_name)] = fs_id
 
     def _aria2_rpc_error_task(self):
         jsonreq = json.dumps({'jsonrpc': '2.0', "id": self.aria2_id,
@@ -58,7 +58,8 @@ class BaiduResume:
                     gid = item.get("gid")
                     path = item.get("files")[0].get("path")
                     baidu_path = path.replace(dl_dir, "")
-                    result = self._aria2_rpc_add_uri(self._get_download_link(baidu_path),
+                    file_name = baidu_path.split("/")[-1]
+                    result = self._aria2_rpc_add_uri(self._get_download_link(file_name),
                                                      self.aria2_header, dl_dir, baidu_path[1:])
                     self._aria2_rpc_remove(gid)
 
