@@ -68,6 +68,7 @@ class BaiduResume:
                               'method': 'aria2.addUri', 'params': [[dlink],
                                                                    {'header': header, 'dir': dl_dir,
                                                                     'out': out}]})
+        print jsonreq
         res = urllib2.urlopen(self.aria2_url, jsonreq)
         return json.loads(res.read())
 
