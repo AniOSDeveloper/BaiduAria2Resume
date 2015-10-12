@@ -28,7 +28,10 @@ class BaiduResume:
         self.all_file_fid = {}  # {filename_hash:[fid,path]}
         self.aria2_url = 'http://%s:%d/jsonrpc' % (self.host, self.port)
         self.aria2_id = aria2_id
-        self.aria2_header = "Cookie:BDUSS=" + self.account.bduss
+        self.header = {'header': ['User-Agent: netdisk;5.2.7;PC;PC-Windows;6.2.9200;WindowsBaiduYunGuanJia',
+                                  'Cookie:BDUSS=' + self.account.bduss]}
+        # self.aria2_header = "User-Agent: netdisk;5.2.7;PC;PC-Windows;6.2.9200;WindowsBaiduYunGuanJia,Cookie:BDUSS="\
+        #                     + self.account.bduss
         self.cache_path = os.path.expanduser("~/.baidu.cache")
 
     def _get_all_file_fid(self, path):
@@ -59,7 +62,7 @@ class BaiduResume:
                     fid = self._get_fid_from_uri(uri)
                     baidu_path = path.replace(dl_dir, "")
                     result = self._aria2_rpc_add_uri(self._get_download_link(fid),
-                                                     self.aria2_header, dl_dir, baidu_path[1:])
+                                                     self.header, dl_dir, baidu_path[1:])
                     self._aria2_rpc_remove(gid)
 
     @staticmethod
