@@ -17,7 +17,7 @@ sys.setdefaultencoding("utf8")
 
 
 class BaiduResume:
-    def __init__(self, user_name, passwd, refresh, host="127.0.0.1", port=6800, aria2_id="aria2_download"):
+    def __init__(self, user_name, passwd,host="127.0.0.1", port=6800, aria2_id="aria2_download"):
         self.user_name = user_name
         self.passwd = passwd
         self.host = host
@@ -31,7 +31,6 @@ class BaiduResume:
         self.aria2_id = aria2_id
         self.aria2_header = "Cookie:BDUSS=" + self.account.bduss
         self.cache_path = os.path.expanduser("~/.baidu.cache")
-        self.refresh = refresh
 
     def _get_all_file_fid(self, path):
         list_params = urllib.urlencode({"dir": path, "_": int(time()), "bdstoken": self.account.token})
@@ -57,11 +56,19 @@ class BaiduResume:
                     dl_dir = item.get("dir")
                     gid = item.get("gid")
                     path = item.get("files")[0].get("path")
+                    uri = item.get("files")[0].get("uris")[0].get("uri")
+                    fid = self._get_fid_from_uri(uri)
                     baidu_path = path.replace(dl_dir, "")
-                    file_name = baidu_path.split("/")[-1]
-                    result = self._aria2_rpc_add_uri(self._get_download_link(file_name),
+                    result = self._aria2_rpc_add_uri(self._get_download_link(fid),
                                                      self.aria2_header, dl_dir, baidu_path[1:])
                     self._aria2_rpc_remove(gid)
+
+    @staticmethod
+    def _get_fid_from_uri(uri):
+        match = re.search(r"fid=[^-]+-[^-]+-([^&]+)&", uri)
+        if match:
+            return match.group(1)
+        return None
 
     def _aria2_rpc_add_uri(self, dlink, header, dl_dir, out):
         jsonreq = json.dumps({'jsonrpc': '2.0', "id": self.aria2_id,
@@ -78,11 +85,9 @@ class BaiduResume:
         res = urllib2.urlopen(self.aria2_url, jsonreq)
         return json.loads(res.read())
 
-    def _get_download_link(self, baidu_path):
-        if get_hash_code(baidu_path) in self.all_file_fid.keys():
-            self._get_all_file_fid("/")
+    def _get_download_link(self, fid):
         url = self.download_url + urllib.urlencode(
-            {"timestamp": int(time()), "fidlist": "[" + str(self.all_file_fid[get_hash_code(baidu_path)]) + "]",
+            {"timestamp": int(time()), "fidlist": "[" + str(fid) + "]",
              "bdstoken": self.account.token,
              "sign": self._get_sign()})
         response = self.session.get(url)
@@ -135,19 +140,6 @@ class BaiduResume:
         print("Cache save to " + self.cache_path)
 
     def start(self):
-        print("Looking for fid cache...")
-        if os.path.exists(self.cache_path) and not self.refresh:
-            print("Try load cache...")
-            try:
-                with open(self.cache_path, "r") as f:
-                    self.all_file_fid = pickle.load(f)
-                    print("Load cache success!!!")
-            except Exception as e:
-                print("Cache is empty...")
-                self._scan_save_all_file_fid()
-        else:
-            self._scan_save_all_file_fid()
-
         self._aria2_rpc_error_task()
 
 
@@ -164,12 +156,10 @@ if __name__ == "__main__":
     parser.add_argument("-port", dest="port", metavar="Port", default=6800, type=int, required=False,
                         help="Aria2 server port,default:6800")
     parser.add_argument("-host", dest="host", default="127.0.0.1", help="Aria2 host address,default:127.0.0.1")
-    parser.add_argument("-r", dest="refresh", default=False, action='store_true',
-                        help="Refresh cache,shoule be true when file changes on pcs.")
     parser.add_argument("-i", dest="aria2_id", metavar="Id", default="aria2_download",
                         help="Aria2 download id.default:aria2_download")
     args = parser.parse_args()
 
     resume = BaiduResume(user_name=args.username, passwd=args.passwd, host=args.host,
-                         port=args.port, aria2_id=args.aria2_id, refresh=args.refresh)
+                         port=args.port, aria2_id=args.aria2_id)
     resume.start()

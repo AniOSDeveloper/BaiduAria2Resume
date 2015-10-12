@@ -51,6 +51,5 @@ python baidu.py -u username -p passwd -host 127.0.0.1 -port 6800 -r -i aria2_dow
 ```
 
 
-##注意
-因为是配合Aria2使用的，所以是按照文件名检索，如果出现同名文件会有问题，稍后解决。
+
 
