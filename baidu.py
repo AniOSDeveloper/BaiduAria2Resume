@@ -8,7 +8,6 @@ import urllib
 import sys
 import urllib2
 import hashlib
-import pickle
 import os
 import argparse
 
@@ -17,7 +16,7 @@ sys.setdefaultencoding("utf8")
 
 
 class BaiduResume:
-    def __init__(self, user_name, passwd,host="127.0.0.1", port=6800, aria2_id="aria2_download"):
+    def __init__(self, user_name, passwd, host="127.0.0.1", port=6800, aria2_id="aria2_download"):
         self.user_name = user_name
         self.passwd = passwd
         self.host = host
@@ -75,7 +74,6 @@ class BaiduResume:
                               'method': 'aria2.addUri', 'params': [[dlink],
                                                                    {'header': header, 'dir': dl_dir,
                                                                     'out': out}]})
-        print jsonreq
         res = urllib2.urlopen(self.aria2_url, jsonreq)
         return json.loads(res.read())
 
@@ -130,14 +128,6 @@ class BaiduResume:
             return base64.b64encode(o)
 
         return sign2(sign3, sign1)
-
-    def _scan_save_all_file_fid(self):
-        print("Sanning all pcs files...")
-        self._get_all_file_fid("/")
-        print("Scanning finished,save to cache...")
-        with open(self.cache_path, "w") as f:
-            pickle.dump(self.all_file_fid, f)
-        print("Cache save to " + self.cache_path)
 
     def start(self):
         self._aria2_rpc_error_task()

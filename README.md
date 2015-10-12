@@ -37,17 +37,14 @@ optional arguments:
   -p Password  Baidu Password
   -port Port   Aria2 server port,default:6800
   -host HOST   Aria2 host address,default:127.0.0.1
-  -r           Refresh cache,shoule be true when file changes on pcs.
+e true when file changes on pcs.
   -i Id        Aria2 download id #设定的aria2 id，每个用户不同，BaiduExporter用的是“aria2_download”，也是脚本的默认值.
 
 ```
-####Tips
-第一次使用会扫一遍百度云中的所有文件，速度比较慢。加了cache，第二次就不会扫了。但是如果百度云中的文件有变化，请加上 ”-r“ 选项刷新cache
-
 
 ####Example
 ```
-python baidu.py -u username -p passwd -host 127.0.0.1 -port 6800 -r -i aria2_download
+python baidu.py -u username -p passwd -host 127.0.0.1 -port 6800 -i aria2_download
 ```
 
 
