@@ -43,7 +43,7 @@ class BaiduResume:
                     dl_dir = item.get("dir")
                     gid = item.get("gid")
                     path = item.get("files")[0].get("path")
-                    print "Found %s...try repair..."
+                    print "Found %s...Trying repair..." % path.splist("/")[-1]
                     uri = item.get("files")[0].get("uris")[0].get("uri")
                     fid = self._get_fid_from_uri(uri)
                     baidu_path = path.replace(dl_dir, "")
