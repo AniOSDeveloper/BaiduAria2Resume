@@ -43,7 +43,7 @@ class BaiduResume:
                     dl_dir = item.get("dir")
                     gid = item.get("gid")
                     path = item.get("files")[0].get("path")
-                    print "Found %s...Trying repair..." % path.split("/")[-1]
+                    print "Found < %s >...Trying repair..." % path.split("/")[-1]
                     uri = item.get("files")[0].get("uris")[0].get("uri")
                     fid = self._get_fid_from_uri(uri)
                     baidu_path = path.replace(dl_dir, "")
@@ -59,6 +59,7 @@ class BaiduResume:
                     result = self._aria2_rpc_add_uri(baidu_down_link,
                                                      dl_dir, baidu_path[1:])
                     self._aria2_rpc_remove(gid)
+                    print "Success!!!"
 
     @staticmethod
     def _get_fid_from_uri(uri):
@@ -92,8 +93,6 @@ class BaiduResume:
         if json_data['errno'] == 0:
             dlink = json_data.get('dlink')[0].get('dlink')
             return dlink
-        else:
-            print response.text
         return None
 
     def _get_sign(self):
