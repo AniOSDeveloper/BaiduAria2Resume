@@ -28,24 +28,9 @@ class BaiduResume:
         self.all_file_fid = {}  # {filename_hash:[fid,path]}
         self.aria2_url = 'http://%s:%d/jsonrpc' % (self.host, self.port)
         self.aria2_id = aria2_id
-        self.header = {'header': ['User-Agent: netdisk;5.2.7;PC;PC-Windows;6.2.9200;WindowsBaiduYunGuanJia',
-                                  'Cookie:BDUSS=' + self.account.bduss]}
-        # self.aria2_header = "User-Agent: netdisk;5.2.7;PC;PC-Windows;6.2.9200;WindowsBaiduYunGuanJia,Cookie:BDUSS="\
-        #                     + self.account.bduss
+        self.header = ['User-Agent: netdisk;5.2.7;PC;PC-Windows;6.2.9200;WindowsBaiduYunGuanJia',
+                       'Cookie:BDUSS=' + self.account.bduss]
         self.cache_path = os.path.expanduser("~/.baidu.cache")
-
-    # def _get_all_file_fid(self, path):
-    #     list_params = urllib.urlencode({"dir": path, "_": int(time()), "bdstoken": self.account.token})
-    #     response = self.session.get(self.list_url + list_params)
-    #     list_data = json.loads(response.text)
-    #     for sub_path in list_data.get("list"):
-    #         sub_path_name = sub_path['server_filename']
-    #         if sub_path['isdir']:
-    #             if not sub_path['empty']:
-    #                 self._get_all_file_fid(path + sub_path_name + "/")
-    #         else:
-    #             fs_id = sub_path['fs_id']
-    #             self.all_file_fid[get_hash_code(sub_path_name)] = fs_id
 
     def _aria2_rpc_error_task(self):
         jsonreq = json.dumps({'jsonrpc': '2.0', "id": self.aria2_id,
@@ -75,8 +60,10 @@ class BaiduResume:
     def _aria2_rpc_add_uri(self, dlink, header, dl_dir, out):
         jsonreq = json.dumps({'jsonrpc': '2.0', "id": self.aria2_id,
                               'method': 'aria2.addUri', 'params': [[dlink],
-                                                                   {'header': header, 'dir': dl_dir,
+                                                                   {'header': self.header,
+                                                                    'dir': dl_dir,
                                                                     'out': out}]})
+        print jsonreq
         res = urllib2.urlopen(self.aria2_url, jsonreq)
         return json.loads(res.read())
 
@@ -95,6 +82,7 @@ class BaiduResume:
         json_data = json.loads(response.text)
         if json_data['errno'] == 0:
             dlink = json_data.get('dlink')[0].get('dlink')
+            print dlink
             return dlink
         else:
             print response.text
@@ -143,18 +131,16 @@ def get_hash_code(s):
 
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("-u", dest="username", metavar="UserName", required=True, help="Baidu User Name")
-    # parser.add_argument("-p", dest="passwd", metavar="Password", required=True, help="Baidu Password")
-    # parser.add_argument("-port", dest="port", metavar="Port", default=6800, type=int, required=False,
-    #                     help="Aria2 server port,default:6800")
-    # parser.add_argument("-host", dest="host", default="127.0.0.1", help="Aria2 host address,default:127.0.0.1")
-    # parser.add_argument("-i", dest="aria2_id", metavar="Id", default="aria2_download",
-    #                     help="Aria2 download id.default:aria2_download")
-    # args = parser.parse_args()
-    #
-    # resume = BaiduResume(user_name=args.username, passwd=args.passwd, host=args.host,
-    #                      port=args.port, aria2_id=args.aria2_id)
-    resume = BaiduResume(user_name="kstq77", passwd="1987221Gnj", host="192.168.0.36",
-                         port=6800)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-u", dest="username", metavar="UserName", required=True, help="Baidu User Name")
+    parser.add_argument("-p", dest="passwd", metavar="Password", required=True, help="Baidu Password")
+    parser.add_argument("-port", dest="port", metavar="Port", default=6800, type=int, required=False,
+                        help="Aria2 server port,default:6800")
+    parser.add_argument("-host", dest="host", default="127.0.0.1", help="Aria2 host address,default:127.0.0.1")
+    parser.add_argument("-i", dest="aria2_id", metavar="Id", default="aria2_download",
+                        help="Aria2 download id.default:aria2_download")
+    args = parser.parse_args()
+
+    resume = BaiduResume(user_name=args.username, passwd=args.passwd, host=args.host,
+                         port=args.port, aria2_id=args.aria2_id)
     resume.start()
