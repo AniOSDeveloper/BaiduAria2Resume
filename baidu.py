@@ -43,11 +43,21 @@ class BaiduResume:
                     dl_dir = item.get("dir")
                     gid = item.get("gid")
                     path = item.get("files")[0].get("path")
+                    print "Found %s...try repair..."
                     uri = item.get("files")[0].get("uris")[0].get("uri")
                     fid = self._get_fid_from_uri(uri)
                     baidu_path = path.replace(dl_dir, "")
-                    result = self._aria2_rpc_add_uri(self._get_download_link(fid),
-                                                     self.header, dl_dir, baidu_path[1:])
+                    baidu_down_link = ""
+                    for i in range(1, 4):
+                        baidu_down_link = self._get_download_link(fid)
+                        if baidu_down_link:
+                            break
+                        print "Get pcs link failed...Retry %d" % i
+                    if not baidu_down_link:
+                        print "Get pcs link failed! Continue next!"
+                        continue
+                    result = self._aria2_rpc_add_uri(baidu_down_link,
+                                                     dl_dir, baidu_path[1:])
                     self._aria2_rpc_remove(gid)
 
     @staticmethod
@@ -57,13 +67,12 @@ class BaiduResume:
             return match.group(1)
         return None
 
-    def _aria2_rpc_add_uri(self, dlink, header, dl_dir, out):
+    def _aria2_rpc_add_uri(self, dlink, dl_dir, out):
         jsonreq = json.dumps({'jsonrpc': '2.0', "id": self.aria2_id,
                               'method': 'aria2.addUri', 'params': [[dlink],
                                                                    {'header': self.header,
                                                                     'dir': dl_dir,
                                                                     'out': out}]})
-        print jsonreq
         res = urllib2.urlopen(self.aria2_url, jsonreq)
         return json.loads(res.read())
 
@@ -82,7 +91,6 @@ class BaiduResume:
         json_data = json.loads(response.text)
         if json_data['errno'] == 0:
             dlink = json_data.get('dlink')[0].get('dlink')
-            print dlink
             return dlink
         else:
             print response.text
