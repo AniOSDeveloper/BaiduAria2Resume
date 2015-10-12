@@ -1,8 +1,10 @@
 # BaiduAria2Resume
 
 ##总述
-(测试中...可以使用，百度偶尔会返回错误，重新运行即可。)
+
 百度的链接有时效性，保持这个脚本在后台运行，修复失效链接。
+
+错误示范:
 ![](https://raw.githubusercontent.com/sunzhaoyang/BaiduAria2Resume/master/screenshot.png)
 
 ##项目推荐
