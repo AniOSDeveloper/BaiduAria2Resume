@@ -13,7 +13,7 @@ if os.path.exists(status_file):
     aria_stop = True
 
 host_ip = sys.argv[1]
-port = sys.argv[2]
+port = int(sys.argv[2])
 
 
 def pause_all():
