@@ -13,8 +13,7 @@ if os.path.exists(status_file):
     aria_stop = True
 
 host_ip = sys.argv[1]
-if not host_ip:
-    sys.exit(0)
+port = sys.argv[2]
 
 
 def pause_all():
@@ -31,7 +30,7 @@ def aria2_call(method):
 
 
 try:
-    s.connect((host_ip, 22))
+    s.connect((host_ip, port))
     if not aria_stop:
         print("pause all")
         pause_all()
@@ -47,4 +46,3 @@ except socket.error as e:
         os.remove(status_file)
 finally:
     s.close()
-
